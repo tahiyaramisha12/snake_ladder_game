@@ -10,8 +10,9 @@ public class game1 {
 
     private JFrame frame;
     private BoardPanel boardPanel;
+    private JLabel turnLabel;
     private JButton rollDiceButton;
-    private JLabel statusLabel;
+    private JLabel rollResultLabel;
     private int player1Pos = 0;
     private int player2Pos = 0;
     private boolean player1Turn = true;
@@ -51,6 +52,9 @@ public class game1 {
 
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(new FlowLayout());
+        
+        turnLabel = new JLabel("Player 1's Turn");
+        controlPanel.add(turnLabel);
 
         rollDiceButton = new JButton("Roll Dice");
         rollDiceButton.addActionListener(new ActionListener() {
@@ -58,15 +62,16 @@ public class game1 {
             public void actionPerformed(ActionEvent e) {
                 int diceRoll = (int) (Math.random() * 6) + 1;
                 movePlayer(diceRoll);
-                statusLabel.setText("Rolled: " + diceRoll);
+                rollResultLabel.setText("Rolled: " + diceRoll);
             }
         });
         controlPanel.add(rollDiceButton);
 
-        statusLabel = new JLabel("Player 1's Turn");
-        controlPanel.add(statusLabel);
+        rollResultLabel = new JLabel("");
+        controlPanel.add(rollResultLabel);
 
         frame.getContentPane().add(controlPanel, BorderLayout.SOUTH);
+        updateTurnStatus();
     }
 
     private void initializeSnakesAndLadders() {
@@ -111,6 +116,7 @@ public class game1 {
             }
         }
         player1Turn = !player1Turn;
+        updateTurnStatus();
         boardPanel.repaint();
     }
 
@@ -127,11 +133,20 @@ public class game1 {
         }
         return pos;
     }
+    
+    private void updateTurnStatus() {
+        if (player1Turn) {
+        	turnLabel.setText("Player 1's Turn");
+        } else {
+        	turnLabel.setText("Player 2's Turn");
+        }
+    }
 
     private void resetGame() {
         player1Pos = 0;
         player2Pos = 0;
         player1Turn = true;
+        updateTurnStatus();
     }
 
     private class BoardPanel extends JPanel {
