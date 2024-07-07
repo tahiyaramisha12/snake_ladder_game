@@ -20,7 +20,10 @@ public class game1 {
 
     private LinkedList<int[]> snakes;
     private LinkedList<int[]> ladders;
+    
     private int[] diceRollFrequency;
+    
+    private static final int SIZE = 10;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -47,6 +50,7 @@ public class game1 {
 
         snakes = new LinkedList<>();
         ladders = new LinkedList<>();
+        
         initializeSnakesAndLadders();
         
         diceRollFrequency = new int[6];
@@ -81,7 +85,7 @@ public class game1 {
 
         frame.getContentPane().add(controlPanel, BorderLayout.SOUTH);
         updateTurnStatus();
-        //resetGame();
+        resetGame();
     }
 
     private void initializeSnakesAndLadders() {
@@ -107,6 +111,8 @@ public class game1 {
         ladders.add(new int[]{62, 96});
         ladders.add(new int[]{66, 87});
         ladders.add(new int[]{80, 100});
+        
+        
     }
 
     private void movePlayer(int diceRoll) {
@@ -183,6 +189,8 @@ public class game1 {
         boardPanel.repaint();
     }
 
+    
+    
     private class BoardPanel extends JPanel {
         private static final int SIZE = 10;
         private static final int CELL_SIZE = 50;
@@ -194,6 +202,7 @@ public class game1 {
             super.paintComponent(g);
             drawBoard(g);
             drawPlayers(g);
+            
         }
 
         private void drawBoard(Graphics g) {
@@ -204,9 +213,25 @@ public class game1 {
                     int position = getPosition(row, col);
                     g.drawRect(x, y, CELL_SIZE, CELL_SIZE);
                     g.drawString(String.valueOf(position), x + 20, y + 20);
+                    
+                    for (int[] snake : snakes) {
+                        if (snake[0] == position) {
+                            g.drawString("S " + snake[0] + "->" + snake[1], x + 2, y + CELL_SIZE-5);
+                        }
+                    }
+
+                    for (int[] ladder : ladders) {
+                        if (ladder[0] == position) {
+                            g.drawString("L " + ladder[0] + "->" + ladder[1], x + 2,y + CELL_SIZE-5);
+                        }
+                    }
                 }
             }
         }
+        
+        
+        
+        
         private void drawPlayers(Graphics g) {
             int player1X = getPlayerX(player1Pos);
             int player1Y = getPlayerY(player1Pos);
