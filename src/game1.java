@@ -13,12 +13,14 @@ public class game1 {
     private JLabel turnLabel;
     private JButton rollDiceButton;
     private JLabel rollResultLabel;
+    private JLabel mostRolledLabel;
     private int player1Pos = 0;
     private int player2Pos = 0;
     private boolean player1Turn = true;
 
     private LinkedList<int[]> snakes;
     private LinkedList<int[]> ladders;
+    private int[] diceRollFrequency;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -46,6 +48,8 @@ public class game1 {
         snakes = new LinkedList<>();
         ladders = new LinkedList<>();
         initializeSnakesAndLadders();
+        
+        diceRollFrequency = new int[6];
 
         boardPanel = new BoardPanel();
         frame.getContentPane().add(boardPanel, BorderLayout.CENTER);
@@ -63,15 +67,21 @@ public class game1 {
                 int diceRoll = (int) (Math.random() * 6) + 1;
                 movePlayer(diceRoll);
                 rollResultLabel.setText("Rolled: " + diceRoll);
+                diceRollFrequency[diceRoll - 1]++;
+                displayMostRolledNumber();
             }
         });
         controlPanel.add(rollDiceButton);
 
         rollResultLabel = new JLabel("");
         controlPanel.add(rollResultLabel);
+        
+        mostRolledLabel = new JLabel("Most Rolled Number: ");
+        controlPanel.add(mostRolledLabel);
 
         frame.getContentPane().add(controlPanel, BorderLayout.SOUTH);
         updateTurnStatus();
+        //resetGame();
     }
 
     private void initializeSnakesAndLadders() {
@@ -105,14 +115,18 @@ public class game1 {
             player1Pos = checkSnakesAndLadders(player1Pos);
             if (player1Pos >= 100) {
                 JOptionPane.showMessageDialog(frame, "Player 1 Wins!");
+                displayMostRolledNumber();
                 resetGame();
+                return;
             }
         } else {
             player2Pos += diceRoll;
             player2Pos = checkSnakesAndLadders(player2Pos);
             if (player2Pos >= 100) {
                 JOptionPane.showMessageDialog(frame, "Player 2 Wins!");
+                displayMostRolledNumber();
                 resetGame();
+                return;
             }
         }
         player1Turn = !player1Turn;
@@ -141,18 +155,40 @@ public class game1 {
         	turnLabel.setText("Player 2's Turn");
         }
     }
-
+    
+    private void displayMostRolledNumber() {
+        int mostRolledNumber = 1;
+        int maxFrequency = diceRollFrequency[0];
+        for (int i = 1; i < 6; i++) {
+            if (diceRollFrequency[i] > maxFrequency) {
+                mostRolledNumber = i + 1;
+                maxFrequency = diceRollFrequency[i];
+            }
+        }
+        mostRolledLabel.setText("Most Rolled Number: " + mostRolledNumber + " (Frequency: " + maxFrequency + ")");
+        
+    }
+    
     private void resetGame() {
         player1Pos = 0;
         player2Pos = 0;
         player1Turn = true;
         updateTurnStatus();
+        rollResultLabel.setText("");
+        mostRolledLabel.setText("Most Rolled Number: ");
+        for (int i = 0; i < 6; i++) {
+            diceRollFrequency[i] = 0;
+        }
+        
+        boardPanel.repaint();
     }
 
     private class BoardPanel extends JPanel {
         private static final int SIZE = 10;
         private static final int CELL_SIZE = 50;
-
+        
+        
+        
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -206,6 +242,6 @@ public class game1 {
             int row = (pos - 1) / SIZE;
             return (SIZE - 1 - row) * CELL_SIZE + 10;
         }
-        
+       
     }
 }
